@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein ROI Calculator | SagarXFit</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>SAGAR<span class="highlight">X</span>FIT</h1>
+            <p class="subtitle">RATIONAL PROTEIN CALCULATOR</p>
+            <hr>
+        </header>
+
+        <section class="input-panel">
+            
+            <div class="input-group">
+                <label for="user-name">Your Name (Optional, for sharing):</label>
+                <input type="text" id="user-name" placeholder="e.g. Rahul">
+            </div>
+            
+            <div class="input-group">
+                <label for="budget">Daily Budget (₹):</label>
+                <input type="number" id="budget" placeholder="e.g. 100" min="10">
+            </div>
+
+            <div class="input-group">
+                <label for="weight">Your Body Weight (kg):</label>
+                <input type="number" id="weight" placeholder="e.g. 70" min="40">
+            </div>
+
+            <div class="input-group">
+                <label for="goal">Fitness Goal:</label>
+                <select id="goal">
+                    <option value="muscle">Lean Bulk (Muscle Gain)</option>
+                    <option value="fatloss">Fat Loss (Strict Caloric Deficit)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="diet">Diet Type:</label>
+                <select id="diet">
+                    <option value="veg">Vegetarian</option>
+                    <option value="nonveg">Non-Vegetarian</option>
+                </select>
+            </div>
+
+           <button type="button" id="toggle-prices-btn" style="width: 100%; padding: 10px; background-color: transparent; color: #bbb; border: 1px dashed #555; font-size: 0.9rem; cursor: pointer; border-radius: 4px; margin-bottom: 15px; transition: 0.3s;">⚙️ Adjust Local Prices</button>
+            <div id="price-settings" class="settings-panel" style="display: none;">
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Enter price per 100g (or 100ml) in your local market:</p>
+                <div id="price-inputs-container">
+                    </div>
+            </div>
+
+        </section>
+
+        <button id="calculate-btn">CALCULATE ROI MAX</button>
+
+        <section class="results-panel" id="results" style="display:none; padding: 15px; border-radius: 8px;">
+            <h2 id="dynamic-title">YOUR OPTIMAL STACK</h2>
+            <div id="context-badge" class="context-badge" style="display: none;"></div>
+            <div id="macro-warning" class="warning-box"></div>
+            
+            <ul id="food-list" class="food-list"></ul>
+            <div id="meal-plan-container" style="display: none; margin-bottom: 20px;"></div>
+
+            <div class="total-macros" style="margin-top: 20px; margin-bottom: 15px;">
+                <div class="macro-box">
+                    <span class="macro-title">PROTEIN</span>
+                    <span class="macro-value" id="total-protein">0g</span>
+                </div>
+                <div class="macro-box">
+                    <span class="macro-title">CARBS</span>
+                    <span class="macro-value" id="total-carbs">0g</span>
+                </div>
+                <div class="macro-box">
+                    <span class="macro-title">FATS</span>
+                    <span class="macro-value" id="total-fats">0g</span>
+                </div>
+                <div class="macro-box cost-box" style="margin-top: 8px;">
+                    <span class="macro-title">CALORIES</span>
+                    <span class="macro-value" id="total-calories">0 kcal</span>
+                </div>
+                <div class="macro-box cost-box" style="margin-top: 8px;">
+                    <span class="macro-title">TOTAL COST</span>
+                    <span class="macro-value" id="total-cost">₹0</span>
+                </div>
+            </div>
+
+            <div class="disclaimer-text">
+                <strong>⚠️ Coach's Note:</strong> This stack maximizes your Protein ROI. Due to high dietary fiber from legumes, split these items into 4-5 meals and drink 4-5L water daily for optimal digestion. Combine this stack with your regular home-cooked food (rice/roti) to hit your total daily calories.
+            </div>
+
+            <div id="brand-footer" class="brand-footer" style="display: none;">
+                <p>Calculated using <strong>SAGAR<span class="highlight">X</span>FIT</strong> Engine</p>
+                <p style="font-size: 0.65rem; color: #666; margin-top: 2px;">Build your own stack at link in bio @sagarxfit</p>
+            </div>
+        </section>
+
+        <button type="button" id="split-meal-btn" style="width: 100%; padding: 12px; background-color: #141414; color: #ffffff; border: 2px solid #e60000; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; border-radius: 4px; cursor: pointer; display: none; margin-top: 20px; margin-bottom: 10px; transition: 0.3s;">🍱 GENERATE DAILY MEAL PLAN</button>
+        
+        <button type="button" id="share-btn" style="width: 100%; padding: 12px; background-color: #e60000; color: #ffffff; border: none; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; border-radius: 4px; cursor: pointer; display: none; margin-bottom: 20px; transition: 0.3s;">📸 DOWNLOAD STACK TO SHARE</button>
+        
+    </div>
+
+<script>
+    // 1. THE MASTER DATA
+    const foodData = [
+        { id: "soya", name: "Soya Chunks", price: 20, protein: 52, fats: 0.5, carbs: 33, type: "veg", maxCap: 50 },
+        { id: "besan", name: "Besan (Gram Flour)", price: 10, protein: 22, fats: 5, carbs: 57, type: "veg", maxCap: 100 },
+        { id: "moong", name: "Moong Dal", price: 12, protein: 24, fats: 1, carbs: 59, type: "veg", maxCap: 100 },
+        { id: "chana", name: "Kala Chana", price: 10, protein: 15, fats: 5, carbs: 62, type: "veg", maxCap: 100 },
+        { id: "peanuts", name: "Raw Peanuts", price: 15, protein: 25, fats: 49, carbs: 16, type: "veg", maxCap: 30 },
+        { id: "tofu", name: "Soya Paneer (Tofu)", price: 15, protein: 15, fats: 8, carbs: 2, type: "veg", maxCap: 200 },
+        { id: "milk", name: "Toned Milk", price: 5.4, protein: 3, fats: 3, carbs: 4.8, type: "veg", maxCap: 500 }, 
+        { id: "paneer", name: "Dairy Paneer", price: 38, protein: 18, fats: 22, carbs: 4, type: "veg", maxCap: 100 },
+        { id: "whey", name: "Raw Whey", price: 180, protein: 80, fats: 5, carbs: 10, type: "veg", maxCap: 66 }, 
+        { id: "chicken", name: "Chicken Breast", price: 30, protein: 31, fats: 3.6, carbs: 0, type: "nonveg", maxCap: 250 },
+        { id: "eggs", name: "Whole Eggs", price: 14, protein: 12, fats: 10, carbs: 1, type: "nonveg", maxCap: 200 } 
+    ];
+
+    let currentSelectedItems = []; 
+
+    // 2. DYNAMIC PRICES UI
+    const priceContainer = document.getElementById('price-inputs-container');
+    foodData.forEach(food => {
+        let div = document.createElement('div');
+        div.className = 'price-edit-group';
+        div.innerHTML = `
+            <label>${food.name}</label>
+            <input type="number" id="price-${food.id}" value="${food.price}" min="1">
+        `;
+        priceContainer.appendChild(div);
+    });
+
+    document.getElementById('toggle-prices-btn').addEventListener('click', function() {
+        let panel = document.getElementById('price-settings');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            this.innerText = "✖ Hide Local Prices";
+        } else {
+            panel.style.display = 'none';
+            this.innerText = "⚙️ Adjust Local Prices";
+        }
+    });
+
+    // 3. MAIN CALCULATION ENGINE
+    document.getElementById('calculate-btn').addEventListener('click', function() {
+        let budgetInput = parseFloat(document.getElementById('budget').value);
+        let userNameInput = document.getElementById('user-name').value.trim();
+        let weightInput = parseFloat(document.getElementById('weight').value);
+        let goal = document.getElementById('goal').value;
+        let diet = document.getElementById('diet').value;
+
+        if (isNaN(budgetInput) || budgetInput < 10) { alert("Bhai, valid budget enter karo!"); return; }
+        if (isNaN(weightInput) || weightInput < 40) { alert("Bhai, apna sahi body weight enter karo!"); return; }
+
+        foodData.forEach(food => {
+            let localPrice = parseFloat(document.getElementById(`price-${food.id}`).value);
+            if (!isNaN(localPrice) && localPrice > 0) food.price = localPrice;
+        });
+
+        let maxProteinTarget = weightInput * 2.2;
+        let availableFoods = foodData.filter(food => diet === 'veg' ? food.type === 'veg' : true);
+        availableFoods.sort((a, b) => (a.price / a.protein) - (b.price / b.protein));
+
+        let currentBudget = budgetInput;
+        let totalProtein = 0, totalCost = 0, totalFats = 0, totalCarbs = 0;
+        currentSelectedItems = []; 
+
+        for (let food of availableFoods) {
+            if (currentBudget <= 1) break; 
+            let remainingProteinNeeded = maxProteinTarget - totalProtein;
+            if (remainingProteinNeeded <= 1) break;
+            if (goal === 'fatloss' && food.fats > 20 && totalFats > 25) continue; 
+
+            let maxAffordableUnits = currentBudget / food.price;
+            let maxBiologicalUnits = food.maxCap / 100;
+            let maxUnitsForProtein = remainingProteinNeeded / food.protein; 
+
+            let unitsToBuy = Math.min(maxAffordableUnits, maxBiologicalUnits, maxUnitsForProtein);
+
+            if (unitsToBuy > 0.1) { 
+                let costForThis = unitsToBuy * food.price;
+                let proteinForThis = unitsToBuy * food.protein;
+                let fatsForThis = unitsToBuy * food.fats;
+                let carbsForThis = unitsToBuy * food.carbs; 
+
+                currentBudget -= costForThis;
+                totalCost += costForThis;
+                totalProtein += proteinForThis;
+                totalFats += fatsForThis;
+                totalCarbs += carbsForThis;
+
+                currentSelectedItems.push({
+                    id: food.id,
+                    name: food.name,
+                    grams: Math.round(unitsToBuy * 100),
+                    protein: Math.round(proteinForThis),
+                    cost: costForThis.toFixed(2)
+                });
+            }
+        }
+
+        let totalCalories = (totalProtein * 4) + (totalCarbs * 4) + (totalFats * 9);
+
+        // UI Updates
+        const resultsPanel = document.getElementById('results');
+        const foodList = document.getElementById('food-list');
+        const macroWarning = document.getElementById('macro-warning');
+        const mealBtn = document.getElementById('split-meal-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const mealContainer = document.getElementById('meal-plan-container');
+        
+        // NAYA LOGIC: Dynamic Title and Context
+        let displayTitle = userNameInput ? `${userNameInput.toUpperCase()}'S OPTIMAL STACK` : "YOUR OPTIMAL STACK";
+        document.getElementById('dynamic-title').innerText = displayTitle;
+
+        let goalText = goal === 'muscle' ? 'Lean Bulk' : 'Fat Loss';
+        document.getElementById('context-badge').innerHTML = `Budget: <strong>₹${budgetInput}</strong> | Weight: <strong>${weightInput}kg</strong> | <strong>${goalText}</strong>`;
+        document.getElementById('context-badge').style.display = 'block';
+        document.getElementById('brand-footer').style.display = 'block';
+
+        foodList.innerHTML = ''; 
+        macroWarning.style.display = 'none'; 
+        mealContainer.style.display = 'none'; 
+        foodList.style.display = 'block'; 
+        mealBtn.innerText = "🍱 GENERATE DAILY MEAL PLAN";
+
+        // Yahan par dono buttons show honge calculation ke baad
+        if (currentSelectedItems.length > 0) {
+            mealBtn.style.display = 'block';
+            shareBtn.style.display = 'block'; 
+        }
+
+        currentSelectedItems.forEach(item => {
+            let li = document.createElement('li');
+            li.style.padding = "10px";
+            li.style.borderBottom = "1px solid #333";
+            li.style.display = "flex";
+            li.style.justifyContent = "space-between";
+            li.innerHTML = `
+                <span style="font-weight: bold;">${item.grams}${item.id === 'milk' ? 'ml' : 'g'} ${item.name}</span>
+                <span style="color: #bbb;">₹${item.cost} | <span style="color: #e60000; font-weight: bold;">${item.protein}g P</span></span>
+            `;
+            foodList.appendChild(li);
+        });
+
+        document.getElementById('total-protein').innerText = Math.round(totalProtein) + 'g';
+        document.getElementById('total-carbs').innerText = Math.round(totalCarbs) + 'g';
+        document.getElementById('total-fats').innerText = Math.round(totalFats) + 'g';
+        document.getElementById('total-calories').innerText = Math.round(totalCalories) + ' kcal';
+        document.getElementById('total-cost').innerText = '₹' + Math.round(totalCost);
+
+        resultsPanel.style.display = 'block';
+    });
+
+    // 4. MEAL SPLITTER LOGIC
+    document.getElementById('split-meal-btn').addEventListener('click', function() {
+        const mealContainer = document.getElementById('meal-plan-container');
+        const foodList = document.getElementById('food-list');
+
+        if (mealContainer.style.display === 'block') {
+            mealContainer.style.display = 'none';
+            foodList.style.display = 'block';
+            this.innerText = "🍱 GENERATE DAILY MEAL PLAN";
+            return;
+        }
+
+        let meals = { "🌅 Breakfast": [], "☀️ Lunch": [], "💪 Post-Workout / Snack": [], "🌙 Dinner / Night": [] };
+
+        currentSelectedItems.forEach(item => {
+            if (['besan', 'eggs'].includes(item.id)) meals["🌅 Breakfast"].push(item);
+            else if (['moong', 'chana', 'paneer', 'tofu'].includes(item.id)) meals["☀️ Lunch"].push(item);
+            else if (['whey', 'peanuts'].includes(item.id)) meals["💪 Post-Workout / Snack"].push(item);
+            else if (['soya', 'chicken', 'milk'].includes(item.id)) meals["🌙 Dinner / Night"].push(item);
+            else meals["☀️ Lunch"].push(item); 
+        });
+
+        let htmlContent = '';
+        for (let [mealName, items] of Object.entries(meals)) {
+            if (items.length > 0) {
+                let itemsHtml = items.map(i => `<div class="meal-item"><span>${i.grams}${i.id === 'milk' ? 'ml' : 'g'} ${i.name}</span><span style="color:#e60000; font-weight:bold;">${i.protein}g P</span></div>`).join('');
+                htmlContent += `<div class="meal-block"><div class="meal-title">${mealName}</div>${itemsHtml}</div>`;
+            }
+        }
+
+        mealContainer.innerHTML = htmlContent;
+        mealContainer.style.display = 'block';
+        foodList.style.display = 'none';
+        this.innerText = "🔙 VIEW RAW INGREDIENT LIST";
+    });
+
+    // 5. THE NEW SHARE TO FLEX (DOWNLOAD LOGIC)
+    document.getElementById('share-btn').addEventListener('click', function() {
+        const resultsDiv = document.getElementById('results');
+        const originalShareDisplay = this.style.display;
+        const originalMealDisplay = document.getElementById('split-meal-btn').style.display;
+        
+        // Hide buttons temporarily so they don't appear in the screenshot
+        this.style.display = 'none';
+        document.getElementById('split-meal-btn').style.display = 'none';
+
+        // Capture the image using html2canvas
+        html2canvas(resultsDiv, { 
+            backgroundColor: '#141414',
+            scale: 2, // High res
+            scrollY: -window.scrollY // YE NAYI LINE ADD KARNI HAI (Scroll bug fix karne ke liye)
+        }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = 'SagarXFit_Diet_Stack.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            // Show buttons again after download
+            document.getElementById('share-btn').style.display = originalShareDisplay;
+            document.getElementById('split-meal-btn').style.display = originalMealDisplay;
+        });
+    });
+</script>
+</body>
+</html>
