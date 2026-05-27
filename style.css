@@ -1,0 +1,287 @@
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0a0a0a; /* Deep Pitch Black */
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px; /* Mobile first approach */
+    background-color: #141414;
+    padding: 30px 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    font-size: 2rem;
+    letter-spacing: 2px;
+}
+
+.highlight {
+    color: #e60000; /* Brutal Red */
+}
+
+.subtitle {
+    color: #888;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    margin-top: 5px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin-top: 15px;
+}
+
+/* Input Fields */
+.input-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #bbb;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    background-color: #222;
+    border: 1px solid #444;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 4px;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: #e60000;
+}
+
+/* Action Button */
+#calculate-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #e60000;
+    color: #fff;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+#calculate-btn:hover {
+    background-color: #b30000;
+}
+
+/* Results Panel */
+.results-panel {
+    margin-top: 30px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+}
+
+.results-panel h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.food-list {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+/* Macro Boxes at the bottom */
+.total-macros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.macro-box {
+    flex: 1 1 calc(33.33% - 6px); /* Creates a clean grid grid */
+    background-color: #222;
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    border-bottom: 2px solid #555;
+}
+
+.cost-box {
+    flex: 1 1 100%; /* Cost box will take full width at the bottom */
+    border-bottom: none;
+    border-left: 3px solid #e60000;
+    background-color: #1a1a1a;
+    margin-top: 5px;
+}
+
+.macro-title {
+    display: block;
+    font-size: 0.7rem;
+    color: #888;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+}
+
+.macro-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Warning Box for Fat/Carb limit */
+.warning-box {
+    background-color: rgba(230, 0, 0, 0.1);
+    color: #ff4d4d;
+    padding: 10px;
+    border: 1px solid #ff4d4d;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    text-align: center;
+    display: none;
+}
+
+```css
+/* Local Price Settings Panel */
+.secondary-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    color: #bbb;
+    border: 1px dashed #555;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.secondary-btn:hover {
+    color: #fff;
+    border-color: #e60000;
+}
+
+.settings-panel {
+    background-color: #1a1a1a;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.price-edit-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.price-edit-group label {
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.price-edit-group input {
+    width: 70px;
+    padding: 5px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Meal Splitter Styles */
+.meal-block {
+    background-color: #1a1a1a;
+    border-left: 3px solid #e60000;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.meal-title {
+    font-size: 0.85rem;
+    color: #e60000;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.meal-item {
+    font-size: 0.95rem;
+    color: #fff;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #333;
+    padding-bottom: 4px;
+}
+
+/* Viral Share Features Styles */
+.context-badge {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: #aaa;
+    font-size: 0.8rem;
+    padding: 8px;
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.brand-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #333;
+    color: #888;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* Coach's Note / Disclaimer Styles */
+.disclaimer-text {
+    font-size: 0.75rem;
+    color: #999;
+    background-color: #111;
+    padding: 12px;
+    border-left: 3px solid #ffaa00; /* Subtle warning orange */
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    line-height: 1.5;
+    text-align: left;
+    letter-spacing: 0.5px;
+}
+
+.disclaimer-text strong {
+    color: #ffaa00;
+}
